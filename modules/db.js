@@ -118,6 +118,41 @@ var getImageComm = function (id,callback) {
     });
 };
 
+//METHODS with News
+
+var addNews = function (news,callback) {
+    connection.query('insert into News(nameNew,description) value (?,?)',[news.nameNew,news.description],function (err,rows) {
+        if(dublErr(err,callback))
+            connection.query('select * from News where nameNew = ?',[news.nameNew],function (err,rows) {
+                if(err) throw err;
+                callback(rows);
+            })
+    });
+};
+
+var getNews = function (callback) {
+    connection.query('select * from News',function (err,rows) {
+        if(err) throw err;
+        callback(rows);
+    });
+};
+
+var removeNew =  function (id,callback) {
+    getImageComm(id,callback);
+    connection.query('delete from News where id = ?',[id],function (err,rows) {
+        if(err) throw err;
+    });
+};
+
+var updateNew = function (news,callback) {
+    connection.query('update News set nameNew = ? , description = ? where id = ?',[news.nameNew,news.description,news.id],function (err,rows) {
+        if(dublErr(err,callback))
+            callback(news);
+    });
+};
+
+
+
 
 
 
@@ -132,7 +167,11 @@ exports.db = {
     addCommod: addCommodity,
     updateCommod: updateCommodity,
     removeCommod: removeCommodity,
-    getImg: getImageComm
+    getImg: getImageComm,
+    getNews: getNews,
+    addNews: addNews,
+    removeNews: removeNew,
+    updateNews: updateNew
 };
 
 /*

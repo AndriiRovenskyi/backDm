@@ -38,7 +38,7 @@ app.use(function (req, res, next) {
 
 
 
-// All functions for subcategories
+// All methods for subcategories
 
 app.delete('/subCategory/delete/:id',function (req,res) {
     var id = req.params.id;
@@ -67,7 +67,7 @@ app.put('/subCategory/update',function (req,res) {
     });
 });
 
-// All functions for commodities
+// All methods for commodities
 
 app.delete('/commodity/delete/:id',function (req,res) {
     var id = req.params.id;
@@ -90,7 +90,6 @@ app.get('/commodity/get/:id',function (req,res) {
     });
 });
 
-
 app.post('/commodity/add',function (req,res) {
     var obj = req.body;
     obj.img = images.addImage(obj);
@@ -99,13 +98,34 @@ app.post('/commodity/add',function (req,res) {
     });
 });
 
-
-
 app.put('/commodity/update',function (req,res) {
     var obj = req.body;
-    db.updateCommod(images.updateImage(obj,db.getImg()),function (data) {
+    db.updateCommod(images.updateImage(obj,db.getImg),function (data) {
         res.send(data);
     });
+});
+
+//All methods for News
+
+app.get('/news/get',function (req,res) {
+    db.getNews(function (data) {
+        res.send(data);
+    })
+});
+
+app.post('/news/add',function (req,res) {
+    var obj = req.body;
+    db.addNews(obj,function (data) {
+        res.send(data);
+    })
+});
+
+app.put('/news/update',function (req,res) {
+    var obj = req.body;
+    db.updateNews(obj,function (data) {
+        res.send(data);
+    })
+
 });
 
 

@@ -24,7 +24,7 @@ var updateImage = function (firespace,image) {
     if(firespace.img!=null){
        firespace.img = addImage(firespace);
         image(firespace.id,function (data) {
-            removeImage(data)
+            removeImage(data);
         });
        return firespace;
     }
