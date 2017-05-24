@@ -5,8 +5,11 @@ var db = require('./modules/db').db;
 var fs = require('fs');
 var images = require('./modules/convertor').images;
 var app = express();
+var cors = require('cors');
 
 app.use(bodyParser.json());
+
+app.use(cors());
 
 //для апі
 
@@ -17,6 +20,8 @@ app.get('/',function (req,res) {
 
 app.use(express.static( path.join(__dirname + "/")));
 
+
+/*
 // Add headers // Кросдоменні запити
 app.use(function (req, res, next) {
     // Website you wish to allow to connect
@@ -32,11 +37,12 @@ app.use(function (req, res, next) {
     // to the API (e.g. in case you use sessions)
     res.setHeader('Access-Control-Allow-Credentials', true);
 
+
     // Pass to next layer of middleware
     next();
 });
 
-
+*/
 
 // All methods for subcategories
 
@@ -117,7 +123,7 @@ app.post('/news/add',function (req,res) {
     var obj = req.body;
     db.addNews(obj,function (data) {
         res.send(data);
-    })
+    });
 });
 
 app.put('/news/update',function (req,res) {
@@ -125,8 +131,15 @@ app.put('/news/update',function (req,res) {
     db.updateNews(obj,function (data) {
         res.send(data);
     })
-
 });
+
+app.delete('/news/delete/:id',function (req,res) {
+    var id = req.params.id;
+    db.removeNews(id,function (data) {
+        res.send(data);
+    })
+});
+
 
 
 

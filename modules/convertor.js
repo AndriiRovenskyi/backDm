@@ -14,10 +14,14 @@ var addImage = function (firespace) {
 };
 
 var removeImage = function (img) {
-    fs.unlink(img, function (err) {
-        if (err) throw err;
-        console.log('successfully deleted image');
-    });
+    if(img){
+        fs.unlink(img, function (err) {
+            if (err) throw err;
+            console.log('successfully deleted image');
+        });
+    }else{
+        console.log('image not found');
+    }
 };
 
 var updateImage = function (firespace,image) {
