@@ -49,7 +49,8 @@ app.use(function (req, res, next) {
 app.delete('/subCategory/delete/:id',function (req,res) {
     var id = req.params.id;
     db.removeSub(id,function (data) {
-        res.send(data);
+        images.removeImage(data);
+        res.send(true);
     });
 });
 
@@ -61,6 +62,7 @@ app.get('/subCategory/get',function (req,res) {
 
 app.post('/subCategory/add',function (req,res) {
     var obj = req.body;
+    obj.img = images.addImageSubCat(obj);
     db.addSub(obj,function (data) {
         res.send(data);
     });
@@ -68,7 +70,7 @@ app.post('/subCategory/add',function (req,res) {
 
 app.put('/subCategory/update',function (req,res) {
     var obj = req.body;
-    db.updateSub(obj,function (data) {
+    db.updateSub(images.updateImageSub(obj,db.getImageSub),function (data) {
         res.send(data);
     });
 });

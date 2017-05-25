@@ -36,7 +36,7 @@ var getSubCategories = function (callback) {
 };
 
 var addSubCategory = function (subCat,callback) {
-    connection.query('insert into subCategories(nameSubUa,nameSubEng,nameSubPl,id_cat) value (?,?,?,?)',[subCat.nameSubUa,subCat.nameSubEng,subCat.nameSubPl,subCat.id_cat],function (err,rows) {
+    connection.query('insert into subCategories(nameSubUa,nameSubEng,nameSubPl,img,id_cat) value (?,?,?,?,?)',[subCat.nameSubUa,subCat.nameSubEng,subCat.nameSubPl,subCat.img,subCat.id_cat],function (err,rows) {
        if(dublErr(err,callback))
             connection.query('select * from subCategories where id_cat = ? and nameSubEng = ?',[subCat.id_cat,subCat.nameSubEng],function (err,rows) {
                 if(err) throw err;
@@ -46,16 +46,33 @@ var addSubCategory = function (subCat,callback) {
 };
 
 var updateSubCategory = function (subCat,callback) {
-    connection.query('update subCategories set nameSubUa = ? , nameSubEng = ?, nameSubPl = ?, id_cat = ? where id = ?',[subCat.nameSubUa,subCat.nameSubEng,subCat.nameSubPl,subCat.id_cat,subCat.id],function (err,rows) {
-        if(dublErr(err,callback))
-        callback(subCat);
-    });
+    if(subCat.img != null) {
+        connection.query('update subCategories set nameSubUa = ? , nameSubEng = ?, nameSubPl = ?, id_cat = ?, img = ? where id = ?', [subCat.nameSubUa, subCat.nameSubEng, subCat.nameSubPl, subCat.id_cat, subCat.id, subCat.img], function (err, rows) {
+            if (dublErr(err, callback))
+                callback(subCat);
+        });
+    }else{
+        connection.query('update subCategories set nameSubUa = ? , nameSubEng = ?, nameSubPl = ?, id_cat = ? where id = ?', [subCat.nameSubUa, subCat.nameSubEng, subCat.nameSubPl, subCat.id_cat, subCat.id], function (err, rows) {
+            if (dublErr(err, callback))
+               connection.query('select * from subCategories where id = ?',[subCat.id],function (err,rows) {
+                   if(err) throw err;
+                   callback(rows);
+               })
+        });
+    }
 };
 
 var removeSubCategories = function (id,callback) {
+    getImageSub(id,callback);
     connection.query('delete from subCategories where id = ?',[id],function (err,rows) {
         if(err) throw err;
-        callback(true);
+    });
+};
+
+var getImageSub = function (id,callback) {
+    connection.query("select img from subCategories where id = ?",[id],function (err,rows) {
+        if(err) throw err;
+        callback(rows[0].img);
     });
 };
 
@@ -100,7 +117,7 @@ var updateCommodity = function (com,callback) {
                 if(dublErr(err,callback))
                     callback(com);
             });
-    };
+    }
 };
 
 var getImageComm = function (id,callback) {
@@ -171,7 +188,8 @@ exports.db = {
     getNews: getNews,
     addNews: addNews,
     removeNews: removeNew,
-    updateNews: updateNew
+    updateNews: updateNew,
+    getImageSub: getImageSub
 };
 
 /*
