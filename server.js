@@ -7,7 +7,11 @@ var images = require('./modules/convertor').images;
 var app = express();
 var cors = require('cors');
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '50mb'}));
+// app.use(bodyParser.urlencoded({limit: '50mb'}));
+
+// app.use(({limit: '50mb'}
+// ));
 
 app.use(cors());
 
@@ -56,6 +60,14 @@ app.delete('/subCategory/delete/:id',function (req,res) {
 
 app.get('/subCategory/get',function (req,res) {
     db.getSub(function (data) {
+        res.send(data);
+    });
+});
+
+
+app.get('/subCategory/getone/:id',function (req,res) {
+    var id = req.params.id;
+    db.getSubById(id, function (data) {
         res.send(data);
     });
 });
@@ -123,6 +135,8 @@ app.get('/news/get',function (req,res) {
 
 app.post('/news/add',function (req,res) {
     var obj = req.body;
+    obj.img = images.addNewsImage(obj);
+    console.log(obj);
     db.addNews(obj,function (data) {
         res.send(data);
     });
@@ -130,9 +144,9 @@ app.post('/news/add',function (req,res) {
 
 app.put('/news/update',function (req,res) {
     var obj = req.body;
-    db.updateNews(obj,function (data) {
+    db.updateNews(images.updateImageNew(obj,db.getImageNews),function (data) {
         res.send(data);
-    })
+    });
 });
 
 app.delete('/news/delete/:id',function (req,res) {
@@ -142,6 +156,19 @@ app.delete('/news/delete/:id',function (req,res) {
     })
 });
 
+app.get('/news/getone/:id',function (req,res) {
+    var id = req.params.id;
+    db.getNewsByID(id, function (data) {
+        res.send(data);
+    });
+});
+app.get('/commodities/getone/:id',function (req,res) {
+    var id = req.params.id;
+    db.getComByID(id, function (data) {
+        res.send(data);
+    });
+});
+
 
 
 
@@ -149,6 +176,6 @@ app.use(function(req, res, next) {
     res.status(404).send('Вибачте, такої сторінки не існує!');
 });
 
-app.listen(8080,function () {
+app.listen(8081,function () {
     console.log('listen on server')
 });
