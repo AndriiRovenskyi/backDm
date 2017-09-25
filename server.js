@@ -7,17 +7,34 @@ var images = require('./modules/convertor').images;
 var app = express();
 var cors = require('cors');
 
-app.use(bodyParser.json({limit: '50mb'}));
-// app.use(bodyParser.urlencoded({limit: '50mb'}));
 
-// app.use(({limit: '50mb'}
-// ));
+var auth = function(req, res, next) {
+    if (req.get('Authorization') == '143a6f74056707f6b14875ec6ca4f2eb16f5d0781f7e1cb82bd441b4438b43d3')
+        return next();
+    else
+        return res.sendStatus(401);
+};
+
+app.use(bodyParser.json({limit: '50mb'}));
+
+
 
 app.use(cors());
 
+
+app.post('/signIn',  function (req,res) {
+    if (!req.body.login || !req.body.password) {
+        res.send('login failed');
+    } else if (req.body.login === "admin" || req.body.password === "admin") {
+
+        res.send({token:'143a6f74056707f6b14875ec6ca4f2eb16f5d0781f7e1cb82bd441b4438b43d3'});
+    }
+});
+
+
 //для апі
 
-app.get('/',function (req,res) {
+app.get('/', function (req,res) {
     res.send('Hello server API !!!');
 });
 
@@ -50,29 +67,30 @@ app.use(function (req, res, next) {
 
 // All methods for subcategories
 
-app.delete('/subCategory/delete/:id',function (req,res) {
+app.delete('/subCategory/delete/:id',  auth ,function (req,res) {
     var id = req.params.id;
+    console.log(req.get('Authorization'));
     db.removeSub(id,function (data) {
         images.removeImage(data);
         res.send(true);
     });
 });
 
-app.get('/subCategory/get',function (req,res) {
+app.get('/subCategory/get',  function (req,res) {
     db.getSub(function (data) {
         res.send(data);
     });
 });
 
 
-app.get('/subCategory/getone/:id',function (req,res) {
+app.get('/subCategory/getone/:id',  function (req,res) {
     var id = req.params.id;
     db.getSubById(id, function (data) {
         res.send(data);
     });
 });
 
-app.post('/subCategory/add',function (req,res) {
+app.post('/subCategory/add',  auth ,function (req,res) {
     var obj = req.body;
     obj.img = images.addImageSubCat(obj);
     db.addSub(obj,function (data) {
@@ -80,7 +98,7 @@ app.post('/subCategory/add',function (req,res) {
     });
 });
 
-app.put('/subCategory/update',function (req,res) {
+app.put('/subCategory/update',  auth ,function (req,res) {
     var obj = req.body;
     db.updateSub(images.updateImageSub(obj,db.getImageSub),function (data) {
         res.send(data);
@@ -89,7 +107,7 @@ app.put('/subCategory/update',function (req,res) {
 
 // All methods for commodities
 
-app.delete('/commodity/delete/:id',function (req,res) {
+app.delete('/commodity/delete/:id',  auth ,function (req,res) {
     var id = req.params.id;
     db.removeCommod(id,function (data) {
         images.removeImage(data);
@@ -97,20 +115,22 @@ app.delete('/commodity/delete/:id',function (req,res) {
     });
 });
 
-app.get('/commodity/get',function (req,res) {
+app.get('/commodity/get', function (req,res) {
+    console.log();
+    console.log("sssssssssssssss");
     db.getCommod(function (data) {
         res.send(data);
     });
 });
 
-app.get('/commodity/get/:id',function (req,res) {
+app.get('/commodity/get/:id',  function (req,res) {
     var id = req.params.id;
     db.getCommodFromSub(id,function (data) {
         res.send(data);
     });
 });
 
-app.post('/commodity/add',function (req,res) {
+app.post('/commodity/add',  auth ,function (req,res) {
     var obj = req.body;
     obj.img = images.addImage(obj);
     db.addCommod(obj,function (data) {
@@ -118,7 +138,7 @@ app.post('/commodity/add',function (req,res) {
     });
 });
 
-app.put('/commodity/update',function (req,res) {
+app.put('/commodity/update',  auth ,function (req,res) {
     var obj = req.body;
     db.updateCommod(images.updateImage(obj,db.getImg),function (data) {
         res.send(data);
@@ -127,13 +147,13 @@ app.put('/commodity/update',function (req,res) {
 
 //All methods for News
 
-app.get('/news/get',function (req,res) {
+app.get('/news/get',  function (req,res) {
     db.getNews(function (data) {
         res.send(data);
     })
 });
 
-app.post('/news/add',function (req,res) {
+app.post('/news/add',  auth ,function (req,res) {
     var obj = req.body;
     obj.img = images.addNewsImage(obj);
     console.log(obj);
@@ -142,32 +162,34 @@ app.post('/news/add',function (req,res) {
     });
 });
 
-app.put('/news/update',function (req,res) {
+app.put('/news/update',  auth ,function (req,res) {
     var obj = req.body;
     db.updateNews(images.updateImageNew(obj,db.getImageNews),function (data) {
         res.send(data);
     });
 });
 
-app.delete('/news/delete/:id',function (req,res) {
+app.delete('/news/delete/:id',  auth ,function (req,res) {
     var id = req.params.id;
     db.removeNews(id,function (data) {
         res.send(data);
     })
 });
 
-app.get('/news/getone/:id',function (req,res) {
+app.get('/news/getone/:id',  function (req,res) {
     var id = req.params.id;
     db.getNewsByID(id, function (data) {
         res.send(data);
     });
 });
-app.get('/commodities/getone/:id',function (req,res) {
+app.get('/commodities/getone/:id',  function (req,res) {
     var id = req.params.id;
     db.getComByID(id, function (data) {
         res.send(data);
     });
 });
+
+
 
 
 
