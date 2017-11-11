@@ -23,11 +23,31 @@ app.use(cors());
 
 
 app.post('/signIn',  function (req,res) {
+    var json = fs.readFileSync("./data.json");
+    var pass = JSON.parse(json).pass;
     if (!req.body.login || !req.body.password) {
-        res.send('login failed');
-    } else if (req.body.login === "admin" || req.body.password === "admin") {
+        res.send(false);
+    } else if (req.body.login === "admin" && req.body.password === pass) {
 
         res.send({token:'143a6f74056707f6b14875ec6ca4f2eb16f5d0781f7e1cb82bd441b4438b43d3'});
+    } else {
+        res.send(false);
+    }
+});
+
+app.put('/update-password',  function (req,res) {
+    var json = fs.readFileSync("./data.json");
+    var admin = JSON.parse(json);
+    if (!req.body.login || !req.body.password) {
+        res.send(false);
+    } else if (req.body.login === "admin" && req.body.password === admin.pass) {
+        admin.pass = req.body.newPassword;
+        fs.writeFile('./data.json',JSON.stringify(admin),function (err,data) {
+            if(err) throw err;
+            res.send(true);
+        })
+    } else {
+        res.send(false);
     }
 });
 
