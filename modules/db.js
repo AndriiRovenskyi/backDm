@@ -1,10 +1,14 @@
 var mysql = require('mysql');
 
 var connection = mysql.createConnection({
-    host: 'dmstone.mysql.ukraine.com.ua',
-    user: 'dmstone_fire',
-    password: 'dt75b7j4',
-    database: 'dmstone_fire'
+    // host: 'dmstone.mysql.ukraine.com.ua',
+    // user: 'dmstone_fire',
+    // password: 'dt75b7j4',
+    // database: 'dmstone_fire'
+    host: 'localhost',
+    user: 'root',
+    password: 'arv34',
+    database: 'Fire'
 });
 
 connection.connect(function(err) {
@@ -52,7 +56,8 @@ var getComByID = function (id, callback) {
 
 
 var addSubCategory = function (subCat,callback) {
-    connection.query('insert into subCategories(nameSubUa,nameSubEng,nameSubPl,img,id_cat) value (?,?,?,?,?)',[subCat.nameSubUa,subCat.nameSubEng,subCat.nameSubPl,subCat.img,subCat.id_cat],function (err,rows) {
+    console.log(subCat)
+    connection.query('insert into subCategories(nameSubRu,nameSubUa,nameSubEng,nameSubPl,img,id_cat) value (?,?,?,?,?,?)',[subCat.nameSubRu,subCat.nameSubUa,subCat.nameSubEng,subCat.nameSubPl,subCat.img,subCat.id_cat],function (err,rows) {
         if(dublErr(err,callback))
             connection.query('select * from subCategories where id_cat = ? and nameSubEng = ?',[subCat.id_cat,subCat.nameSubEng],function (err,rows) {
                 if(err) throw err;
@@ -62,13 +67,16 @@ var addSubCategory = function (subCat,callback) {
 };
 
 var updateSubCategory = function (subCat,callback) {
+    console.log("1")
+
     if(subCat.img != null) {
-        connection.query('update subCategories set nameSubUa = ? , nameSubEng = ?, nameSubPl = ?, id_cat = ?, img = ? where id = ?', [subCat.nameSubUa, subCat.nameSubEng, subCat.nameSubPl, subCat.id_cat, subCat.id, subCat.img], function (err, rows) {
+        connection.query('update subCategories set nameSubRu = ? ,nameSubUa = ? , nameSubEng = ?, nameSubPl = ?, id_cat = ?, img = ? where id = ?', [subCat.nameSubRu,subCat.nameSubUa, subCat.nameSubEng, subCat.nameSubPl, subCat.id_cat, subCat.id, subCat.img], function (err, rows) {
             if (dublErr(err, callback))
+                console.log("2")
                 callback(subCat);
         });
     }else{
-        connection.query('update subCategories set nameSubUa = ? , nameSubEng = ?, nameSubPl = ?, id_cat = ? where id = ?', [subCat.nameSubUa, subCat.nameSubEng, subCat.nameSubPl, subCat.id_cat, subCat.id], function (err, rows) {
+        connection.query('update subCategories set nameSubRu = ? ,nameSubUa = ? , nameSubEng = ?, nameSubPl = ?, id_cat = ? where id = ?', [subCat.nameSubRu,subCat.nameSubUa, subCat.nameSubEng, subCat.nameSubPl, subCat.id_cat, subCat.id], function (err, rows) {
             if (dublErr(err, callback))
                 connection.query('select * from subCategories where id = ?',[subCat.id],function (err,rows) {
                     if(err) throw err;
@@ -110,8 +118,8 @@ var getCommoditiesFromSub = function (id_sub, callback) {
 
 
 var addCommodity = function (com,callback) {
-    connection.query('insert into Commodities(nameCommoditiesUa,nameCommoditiesEng,nameCommoditiesPl, descriptionUa,descriptionEng,descriptionPl,  id_sub, img) value (?,?,?,?,?,?,?,?)',
-        [com.nameCommoditiesUa,com.nameCommoditiesEng,com.nameCommoditiesPl, com.descriptionUa, com.descriptionEng, com.descriptionPl, com.id_sub, com.img],function (err,rows) {
+    connection.query('insert into Commodities(nameCommoditiesRu,nameCommoditiesUa,nameCommoditiesEng,nameCommoditiesPl, descriptionRu,descriptionUa,descriptionEng,descriptionPl,  id_sub, img) value (?,?,?,?,?,?,?,?,?,?)',
+        [com.nameCommoditiesRu,com.nameCommoditiesUa,com.nameCommoditiesEng,com.nameCommoditiesPl, com.descriptionRu,com.descriptionUa, com.descriptionEng, com.descriptionPl, com.id_sub, com.img],function (err,rows) {
             if(dublErr(err,callback))
                 connection.query('select * from Commodities where id_sub = ? and nameCommoditiesEng = ?',[com.id_sub,com.nameCommoditiesEng],function (err,rows) {
                     if(err) throw err;
@@ -122,14 +130,14 @@ var addCommodity = function (com,callback) {
 
 var updateCommodity = function (com,callback) {
     if(com.img != null){
-        connection.query('update Commodities set nameCommoditiesUa = ?,nameCommoditiesEng = ?,nameCommoditiesPl = ?, descriptionUa = ?,descriptionEng = ?,descriptionPl = ?,  id_sub = ?, img = ? where id = ?',
-            [com.nameCommoditiesUa,com.nameCommoditiesEng,com.nameCommoditiesPl, com.descriptionUa,com.descriptionEng,com.descriptionPl, com.id_sub, com.id, com.img],function (err,rows) {
+        connection.query('update Commodities set nameCommoditiesRu = ?,nameCommoditiesUa = ?,nameCommoditiesEng = ?,nameCommoditiesPl = ?, descriptionRu = ?,descriptionUa = ?,descriptionEng = ?,descriptionPl = ?,  id_sub = ?, img = ? where id = ?',
+            [com.nameCommoditiesRu,com.nameCommoditiesUa,com.nameCommoditiesEng,com.nameCommoditiesPl, com.descriptionRu,com.descriptionUa,com.descriptionEng,com.descriptionPl, com.id_sub, com.id, com.img],function (err,rows) {
                 if(dublErr(err,callback))
                     callback(com);
             });
     }else{
-        connection.query('update Commodities set nameCommoditiesUa = ?,nameCommoditiesEng = ?,nameCommoditiesPl = ?, descriptionUa = ?,descriptionEng = ?,descriptionPl = ?, id_sub = ? where id = ?',
-            [com.nameCommoditiesUa,com.nameCommoditiesEng,com.nameCommoditiesPl, com.descriptionUa,com.descriptionEng,com.descriptionPl, com.id_sub, com.id],function (err,rows) {
+        connection.query('update Commodities set nameCommoditiesRu = ?,nameCommoditiesUa = ?,nameCommoditiesEng = ?,nameCommoditiesPl = ?, descriptionRu = ?,descriptionUa = ?,descriptionEng = ?,descriptionPl = ?, id_sub = ? where id = ?',
+            [com.nameCommoditiesRu,com.nameCommoditiesUa,com.nameCommoditiesEng,com.nameCommoditiesPl, com.descriptionRu, com.descriptionUa,com.descriptionEng,com.descriptionPl, com.id_sub, com.id],function (err,rows) {
                 if(dublErr(err,callback))
                     callback(com);
             });
@@ -154,7 +162,7 @@ var removeCommodity = function (id,callback) {
 //METHODS with News
 
 var addNews = function (news,callback) {
-    connection.query('insert into News(nameNewEng,nameNewUa, nameNewPl, descriptionUa ,descriptionEng, descriptionPl, img) value (?,?,?,?,?,?,?)',[news.nameNewEng,news.nameNewUa,news.nameNewPl,news.descriptionUa, news.descriptionEng, news.descriptionPl, news.img],function (err,rows) {
+    connection.query('insert into News(nameNewEng,nameNewRu,nameNewUa, nameNewPl, descriptionRu , descriptionUa ,descriptionEng, descriptionPl, img) value (?,?,?,?,?,?,?,?)',[news.nameNewEng,news.nameNewRu,news.nameNewUa,news.nameNewPl,news.descriptionRu,news.descriptionUa, news.descriptionEng, news.descriptionPl, news.img],function (err,rows) {
         if(dublErr(err,callback))
             connection.query('select * from News where nameNewEng = ?',[news.nameNewEng],function (err,rows) {
                 if(err) throw err;
@@ -194,12 +202,12 @@ var removeNew =  function (id,callback) {
 
 var updateNew = function (news,callback) {
     if(news.img != null){
-        connection.query('update News set nameNewEng = ? , nameNewUa = ? , nameNewPl = ? , descriptionUa = ?, descriptionEng = ?,descriptionPl = ?, img = ? where id = ?',[news.nameNewEng,news.nameNewUa,news.nameNewPl,news.descriptionUa,news.descriptionEng,news.descriptionPl,news.img,news.id],function (err,rows) {
+        connection.query('update News set nameNewEng = ? , nameNewRu = ? ,nameNewUa = ? , nameNewPl = ? , descriptionRu = ?,descriptionUa = ?, descriptionEng = ?,descriptionPl = ?, img = ? where id = ?',[news.nameNewEng,news.nameNewRu,news.nameNewUa,news.nameNewPl,news.descriptionRu,news.descriptionUa,news.descriptionEng,news.descriptionPl,news.img,news.id],function (err,rows) {
             if(dublErr(err,callback))
                 callback(news);
         })}
     else{
-        connection.query('update News set nameNewEng = ? , nameNewUa = ? , nameNewPl = ? , descriptionUa = ?, descriptionEng = ?,descriptionPl = ? where id = ?',[news.nameNewEng,news.nameNewUa,news.nameNewPl,news.descriptionUa,news.descriptionEng,news.descriptionPl,news.id],function (err,rows) {
+        connection.query('update News set nameNewEng = ? , nameNewRu = ? ,nameNewUa = ? , nameNewPl = ? , descriptionRu = ?,descriptionUa = ?, descriptionEng = ?,descriptionPl = ? where id = ?',[news.nameNewEng,news.nameNewRu,news.nameNewUa,news.nameNewPl,news.descriptionRu,news.descriptionUa,news.descriptionEng,news.descriptionPl,news.id],function (err,rows) {
             if(dublErr(err,callback))
                 callback(news);
         })
